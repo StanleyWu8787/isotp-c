@@ -2,6 +2,20 @@
 #include "assert.h"
 #include "isotp.h"
 
+
+///////////////////////////////////////////////////////
+///                 EXTERN FUNCTION                 ///
+///////////////////////////////////////////////////////
+
+extern void isotp_user_debug(const char* message, ...);
+extern int  isotp_user_send_can(const uint32_t arbitration_id,
+                         const uint8_t* data, const uint8_t size
+#if ISO_TP_USER_SEND_CAN_ARG
+,void *arg
+#endif                         
+                         );
+extern uint32_t isotp_user_get_us(void);
+
 ///////////////////////////////////////////////////////
 ///                 STATIC FUNCTIONS                ///
 ///////////////////////////////////////////////////////

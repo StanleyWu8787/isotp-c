@@ -1,12 +1,22 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  # Specify the commit you depend on and update it regularly.
+  URL https://github.com/google/googletest/archive/b514bdc898e2951020cbdca1304b75f5950d1f59.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 ###
 # Project definition
 ###
-project(isotp LANGUAGES C VERSION 1.2.0 DESCRIPTION "A platform-agnostic ISOTP implementation in C for embedded devices.")
+project(isotp LANGUAGES C CXX DESCRIPTION "A platform-agnostic ISOTP implementation in C for embedded devices.")
 
 option(isotpc_USE_INCLUDE_DIR "Copy header files to separate include directory in current binary dir for better separation of header files to combat potential naming conflicts." OFF)
-option(isotpc_STATIC_LIBRARY "Compile libisotpc as a static library, instead of a shared library." OFF)
+option(isotpc_STATIC_LIBRARY "Compile libisotpc as a static library, instead of a shared library." ON)
 option(isotpc_STATIC_LIBRARY_PIC "Make use of position independent code (PIC), when compiling as a static library (enabled automatically when building shared libraries)." OFF)
 option(isotpc_PAD_CAN_FRAMES "Pad CAN frames to their full size." ON)
 set(isotpc_CAN_FRAME_PAD_VALUE "0xAA" CACHE STRING "Padding byte value to be used in CAN frames if enabled")
@@ -80,3 +90,11 @@ add_library(isotp_c ALIAS isotp)
 add_library(simon_cahill::isotp ALIAS isotp)
 add_library(simon_cahill::isotpc ALIAS isotp)
 add_library(simon_cahill::isotp_c ALIAS isotp)
+
+# Now simply link against gtest or gtest_main as needed. Eg
+enable_testing()
+add_executable(isotp_ut test_isotp.cpp)
+target_link_libraries(isotp_ut isotp gtest_main)
+add_test(NAME isotp_test COMMAND isotp_ut)
+
+# add_test(isotp_test isotpc gtest gtest_main)
